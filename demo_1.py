@@ -47,9 +47,7 @@ if __name__ == '__main__':
 
     # TODO
     # Display filter design in spectral domain
-    # sgwt_view_design(g,t,arange);
-    # ylim([0 3])
-    # set(gcf,'position',[0 780,600,300])
+    sgwt.view_design(g,t,arange);
 
     # Chebyshev polynomial approximation
     m = 50 # Order of polynomial approximation
@@ -66,6 +64,7 @@ if __name__ == '__main__':
     # forward transform, using chebyshev approximation
     wp_all = sgwt.cheby_op(d, L, c, arange)
 
+    plt.figure()
     print 'Plotting...'
     for i in range(N_scales + 1):
         plt.subplot(N_scales + 1, 1, i+1)

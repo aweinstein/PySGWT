@@ -2,6 +2,7 @@ import numpy as np
 from scipy.sparse import lil_matrix
 from scipy.optimize import fminbound
 import scipy.sparse.linalg as ssl
+import matplotlib.pylab as plt
 
 def laplacian(A, laplacian_type='raw'):
     """Compute graph laplacian from connectivity matrix.
@@ -339,6 +340,81 @@ def cheby_op(f, L, c, arange):
 
     return r
 
+def framebounds(g, lmin, lmax):
+    """
+
+    Parameters
+    ----------
+    g : function handles computing sgwt scaling function and wavelet
+       kernels
+    lmin, lmax : minimum nonzero, maximum eigenvalue
+
+    Returns
+    -------
+    A , B : frame bounds
+    sg2 : array containing sum of g(s_i*x)^2 (for visualization)
+    x : x values corresponding to sg2
+    """
+    N = 1e4 # number of points for line search
+    x = np.linspace(lmin, lmax, N)
+    Nscales = len(g)
+
+    sg2 = np.zeros(x.size)
+    for ks in range(Nscales):
+        sg2 += (g[ks](x))**2
+
+    A = np.min(sg2)
+    B = np.max(sg2)
+
+    return (A, B, sg2, x)
+
+def view_design(g, t, arange):
+    """Plot the scaling and wavelet kernel.
+
+    Plot the input scaling function and wavelet kernels, indicates the wavelet
+    scales by legend, and also shows the sum of squares G and corresponding
+    frame bounds for the transform.
+
+    Parameters
+    ----------
+    g : list of  function handles for scaling function and wavelet kernels
+    t : array of wavelet scales corresponding to wavelet kernels in g
+    arange : approximation range
+
+    Returns
+    -------
+    h : figure handle
+    """
+    x = np.linspace(arange[0], arange[1], 1e3)
+    h = plt.figure()
+    
+    J = len(g) 
+    print J
+    G = np.zeros(x.size)
+
+    for n in range(J):
+        if n == 0:
+            lab = 'h'
+        else:
+            lab = 't=%.2f' % t[n-1]
+        plt.plot(x, g[n](x), label=lab)
+        G += g[n](x)**2
+
+    plt.plot(x, G, 'k', label='G')
+
+    (A, B, _, _) = framebounds(g, arange[0], arange[1])
+    plt.axhline(A, c='m', ls=':', label='A')
+    plt.axhline(B, c='g', ls=':', label='B')
+    plt.xlim(arange[0], arange[1])
+
+    plt.title('Scaling function kernel h(x), Wavelet kernels g(t_j x) \n'
+              'sum of Squares G, and Frame Bounds')
+    plt.yticks(np.r_[0:4])
+    plt.ylim(0, 3)
+    plt.legend()
+
+    return h
+
 
 if __name__ == '__main__':
     from scipy.linalg import circulant
@@ -362,10 +438,6 @@ if __name__ == '__main__':
     c = [cheby_coeff(g[i], m, m+1, arange) for i in range(len(g))]
     wpall = cheby_op(d, L, c, arange)
 
-    ## plt.plot(wpall[4])
-    ## plt.figure()
-    ## plt.subplot(Nscales + 1, 1, 1)
-    ## plt.plot(wpall[4])
     for i in range(Nscales + 1):
         plt.subplot(Nscales + 1, 1, i+1)
         plt.plot(wpall[i])
