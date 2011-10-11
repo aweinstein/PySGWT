@@ -17,11 +17,11 @@ def swiss_roll(n, a=1, b=4, depth=5, do_rescale=True):
     a : Initial angle is a*pi
     b : End angle is b*pi
     depth: Depth of the roll
-    do_rescale: If True, rescale to the plus/minus 1 range1
+    do_rescale: If True, rescale to the plus/minus 1 range, default to True
     
     Returns
     -------
-    A 3-by-n ndarray [x1; x2; x3] with the points from the roll
+    x : A 3-by-n ndarray [x1; x2; x3] with the points from the roll
     """
     y = np.random.rand(2, n)
     t = np.pi * np.sqrt((b*b - a*a) * y[0,:] + a*a)
@@ -34,8 +34,9 @@ def swiss_roll(n, a=1, b=4, depth=5, do_rescale=True):
         x2 = rescale(x2)
         x3 = rescale(x3)
     
-    #return (x1, x2, x3)
-    return np.vstack([x1, x2, x3])
+    x = np.vstack([x1, x2, x3])
+
+    return x
 
 def rescale(x):
     """Rescale vector x into the [-1, 1] range.
@@ -53,17 +54,14 @@ def rescale(x):
     return x
 
 if __name__ == '__main__':
-    #(x1, x2, x3) = swiss_roll(1000)
-    x = swiss_roll(1000)
 
-    import matplotlib as mpl
     from mpl_toolkits.mplot3d import Axes3D
     import matplotlib.pyplot as plt
 
+    x = swiss_roll(1000)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    #ax.scatter(x1, x2, x3, c='r')
     ax.scatter(x[0,:], x[1,:], x[2,:], c='r')
 
     plt.show()

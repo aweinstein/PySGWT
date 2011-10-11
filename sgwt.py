@@ -389,7 +389,6 @@ def view_design(g, t, arange):
     h = plt.figure()
     
     J = len(g) 
-    print J
     G = np.zeros(x.size)
 
     for n in range(J):
