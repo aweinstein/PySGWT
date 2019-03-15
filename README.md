@@ -1,3 +1,5 @@
+This repository exists only for historical reason. If interested in Spectral Graph Wavelet Transform or in Graph Signal Processing in General, please check the PyGSP package (https://pygsp.readthedocs.io/).
+
 PySGWT
 ------
 
